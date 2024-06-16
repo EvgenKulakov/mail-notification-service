@@ -1,0 +1,2 @@
+rootProject.name = 'mail-notification-service'
+include 'core', 'mail', 'common'
