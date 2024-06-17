@@ -1,4 +1,4 @@
-package ru.abolsoft.core.controller.user;
+package ru.abolsoft.core.controller.moderator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,8 +12,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
-public class FindController {
+@RequestMapping("/api/moderator")
+public class FindModeratorController {
 
     @Autowired
     private MetadataService metadataService;
@@ -23,7 +23,6 @@ public class FindController {
             @RequestParam(required = false) String sortBy,
             @RequestParam(required = false) Long size,
             @RequestParam(required = false) LocalDate uploadDate) {
-        //TODO: account
-        return metadataService.getImagesByAccount(1L, sortBy, size, uploadDate);
+        return metadataService.getAllImages(sortBy, size, uploadDate);
     }
 }

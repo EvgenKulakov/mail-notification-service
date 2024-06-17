@@ -1,4 +1,4 @@
-package ru.abolsoft.core.cloud.service;
+package ru.abolsoft.core.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import ru.abolsoft.core.cloud.entity.ImageMetadata;
+import ru.abolsoft.core.entity.ImageMetadata;
 
 import java.io.IOException;
 import java.time.LocalDate;

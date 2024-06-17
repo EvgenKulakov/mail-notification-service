@@ -1,7 +1,6 @@
-package ru.abolsoft.core.cloud.entity;
+package ru.abolsoft.core.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

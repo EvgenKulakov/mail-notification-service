@@ -1,12 +1,12 @@
-package ru.abolsoft.core.cloud.service;
+package ru.abolsoft.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.abolsoft.core.cloud.entity.ImageMetadata;
-import ru.abolsoft.core.cloud.repository.ImageMetadataRepository;
+import ru.abolsoft.core.entity.ImageMetadata;
+import ru.abolsoft.core.repository.ImageMetadataRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,9 +18,17 @@ public class MetadataService {
     private ImageMetadataRepository imageMetadataRepository;
 
     @Transactional
-    public List<ImageMetadata> getImages(String sortBy, Long size, LocalDate uploadDate) {
+    public List<ImageMetadata> getAllImages(String sortBy, Long size, LocalDate uploadDate) {
+        return getImagesByAccount(null, sortBy, size, uploadDate);
+    }
+
+    @Transactional
+    public List<ImageMetadata> getImagesByAccount(Long accountId, String sortBy, Long size, LocalDate uploadDate) {
         Specification<ImageMetadata> spec = Specification.where(null);
 
+        if (accountId != null) {
+            spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("accountId"), accountId));
+        }
         if (size != null) {
             spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("size"), size));
         }

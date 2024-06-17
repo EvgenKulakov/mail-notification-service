@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import ru.abolsoft.core.cloud.service.UploadService;
+import ru.abolsoft.core.service.UploadService;
 
 import java.io.IOException;
 
