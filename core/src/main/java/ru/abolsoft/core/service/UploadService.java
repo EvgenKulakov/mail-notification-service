@@ -22,7 +22,7 @@ import java.util.UUID;
 public class UploadService {
 
     @Autowired
-    MetadataService metadataService;
+    ImageMetadataService imageMetadataService;
 
     @Autowired
     private AmazonS3 amazonS3;
@@ -32,18 +32,18 @@ public class UploadService {
 
 
     @Transactional
-    public void uploadFiles(MultipartFile[] files) throws IOException {
+    public void uploadFiles(MultipartFile[] files, Long currentAccountId) throws IOException {
 
         validationFiles(files);
 
         for (MultipartFile file : files) {
 
             try {
-                ImageMetadata metadata = createImageMetadata(file);
+                ImageMetadata metadata = createImageMetadata(file, currentAccountId);
                 amazonS3.putObject(new PutObjectRequest(
                         bucketName, metadata.getName(), file.getInputStream(), new ObjectMetadata()
                 ));
-                metadataService.save(metadata);
+                imageMetadataService.save(metadata);
             } catch (IOException e) {
                 log.error(e.getMessage());
                 throw new IOException("Error uploading file %s".formatted(file.getOriginalFilename()));
@@ -60,7 +60,7 @@ public class UploadService {
         }
     }
 
-    private ImageMetadata createImageMetadata(MultipartFile file) {
+    private ImageMetadata createImageMetadata(MultipartFile file, Long currentAccountId) {
 
         String uniqueName = UUID.randomUUID() + "-" + file.getOriginalFilename();
 
@@ -68,7 +68,7 @@ public class UploadService {
         metadata.setName(uniqueName);
         metadata.setUploadDate(LocalDate.now());
         metadata.setSize(file.getSize());
-        metadata.setAccountId(1L);
+        metadata.setAccountId(currentAccountId);
 
         return metadata;
     }

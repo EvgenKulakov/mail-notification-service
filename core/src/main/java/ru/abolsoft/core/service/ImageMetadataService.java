@@ -10,20 +10,21 @@ import ru.abolsoft.core.repository.ImageMetadataRepository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
-public class MetadataService {
+public class ImageMetadataService {
 
     @Autowired
     private ImageMetadataRepository imageMetadataRepository;
 
     @Transactional
     public List<ImageMetadata> getAllImages(String sortBy, Long size, LocalDate uploadDate) {
-        return getImagesByAccount(null, sortBy, size, uploadDate);
+        return getAllImagesByAccount(null, sortBy, size, uploadDate);
     }
 
     @Transactional
-    public List<ImageMetadata> getImagesByAccount(Long accountId, String sortBy, Long size, LocalDate uploadDate) {
+    public List<ImageMetadata> getAllImagesByAccount(Long accountId, String sortBy, Long size, LocalDate uploadDate) {
         Specification<ImageMetadata> spec = Specification.where(null);
 
         if (accountId != null) {
@@ -38,6 +39,14 @@ public class MetadataService {
 
         Sort sort = Sort.by(Sort.Direction.ASC, sortBy != null ? sortBy : "name");
         return imageMetadataRepository.findAll(spec, sort);
+    }
+
+    @Transactional
+    public boolean existImageByAccount(String imageName, Long currentAccountId) {
+        Optional<ImageMetadata> optionalImageMetadata = imageMetadataRepository.findByName(imageName);
+        if (optionalImageMetadata.isEmpty()) return false;
+        if (optionalImageMetadata.get().getAccountId().equals(currentAccountId)) return false;
+        return true;
     }
 
     @Transactional

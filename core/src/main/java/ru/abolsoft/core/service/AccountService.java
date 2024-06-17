@@ -37,7 +37,11 @@ public class AccountService implements UserDetailsService {
         if (accountOptional.isEmpty()) {
             throw new UsernameNotFoundException("Account %s not found".formatted(username));
         }
-        return accountOptional.get();
+        Account account = accountOptional.get();
+        if (account.getIsBlock()) {
+            throw new UsernameNotFoundException("Account %s is blocked".formatted(username));
+        }
+        return account;
     }
 
     @Transactional

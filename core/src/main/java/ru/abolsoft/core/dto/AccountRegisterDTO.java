@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.abolsoft.core.entity.Account;
 
 @Setter
 @Getter

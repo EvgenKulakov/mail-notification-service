@@ -29,12 +29,10 @@ public class UploadController {
     public ResponseEntity<String> uploadFiles(@RequestParam("files") MultipartFile[] files,
                                               Principal principal) {
 
-        // TODO: filter by account
-        Account account = accountService.getAccountByLogin(principal.getName());
-        System.out.println(account.getName());
+        Account currentAccount = accountService.getAccountByLogin(principal.getName());
 
         try {
-            uploadService.uploadFiles(files);
+            uploadService.uploadFiles(files, currentAccount.getId());
         } catch (ValidationException VE) {
             return ResponseEntity.badRequest().body(VE.getMessage());
         } catch (IOException IOE) {
