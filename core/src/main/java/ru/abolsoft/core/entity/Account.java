@@ -35,7 +35,7 @@ public class Account {
 
 
     public enum Role {
-        USER,
-        MODERATOR;
+        ROLE_USER,
+        ROLE_MODERATOR;
     }
 }

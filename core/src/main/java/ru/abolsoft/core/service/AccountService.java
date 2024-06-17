@@ -2,19 +2,43 @@ package ru.abolsoft.core.service;
 
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.abolsoft.core.entity.Account;
 import ru.abolsoft.core.repository.AccountRepository;
 
+import java.util.Collections;
 import java.util.Optional;
 
 @Service
-public class AccountService {
+public class AccountService implements UserDetailsService {
 
     @Autowired
     private AccountRepository accountRepository;
 
+    @Override
+    @Transactional
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Account account = getAccountByLogin(username);
+        return new org.springframework.security.core.userdetails.User(
+                account.getName(),
+                account.getPasswordHash(),
+                Collections.singleton(new SimpleGrantedAuthority(account.getRole().name()))
+        );
+    }
+
+    @Transactional
+    public Account getAccountByLogin(String username) {
+        Optional<Account> accountOptional = accountRepository.findByName(username);
+        if (accountOptional.isEmpty()) {
+            throw new UsernameNotFoundException("Account %s not found".formatted(username));
+        }
+        return accountOptional.get();
+    }
 
     @Transactional
     public Account saveNewAccount(Account account) {

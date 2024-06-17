@@ -3,10 +3,7 @@ package ru.abolsoft.core.controller.moderator;
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.abolsoft.core.service.AccountService;
 
 @RestController
@@ -17,7 +14,7 @@ public class BlockUnblockController {
     private AccountService accountService;
 
 
-    @GetMapping("/block/{username}")
+    @PatchMapping("/block/{username}")
     public ResponseEntity<String> blockAccount(@PathVariable("username") String username) {
 
         try {
@@ -29,7 +26,7 @@ public class BlockUnblockController {
         return ResponseEntity.ok("Account %s successfully blocked".formatted(username));
     }
 
-    @GetMapping("/unblock/{username}")
+    @PatchMapping("/unblock/{username}")
     public ResponseEntity<String> unblockAccount(@PathVariable("username") String username) {
 
         try {
