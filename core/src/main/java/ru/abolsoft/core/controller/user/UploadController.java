@@ -9,22 +9,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import ru.abolsoft.core.cloud.service.CloudService;
+import ru.abolsoft.core.cloud.service.UploadService;
 
 import java.io.IOException;
 
 @RestController
 @RequestMapping("/api")
-public class FileUploadController {
+public class UploadController {
 
     @Autowired
-    private CloudService cloudService;
+    private UploadService uploadService;
 
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFiles(@RequestParam("files") MultipartFile[] files) {
 
         try {
-            cloudService.uploadFiles(files);
+            uploadService.uploadFiles(files);
         } catch (ValidationException VE) {
             return ResponseEntity.badRequest().body(VE.getMessage());
         } catch (IOException IOE) {
