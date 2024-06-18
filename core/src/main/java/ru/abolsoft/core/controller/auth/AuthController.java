@@ -16,6 +16,7 @@ import ru.abolsoft.core.service.kafka.MessageFactory;
 import ru.abolsoft.core.service.persist.AccountService;
 
 @RestController
+@RequestMapping("/api")
 public class AuthController {
 
     @Autowired

@@ -19,6 +19,8 @@ import ru.abolsoft.core.service.persist.ImageMetadataService;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -44,10 +46,13 @@ public class UploadService {
 
         validationFiles(files);
 
+        Map<String, Long> fileDataMap = new HashMap<>();
+
         for (MultipartFile file : files) {
 
+            ImageMetadata metadata = null;
             try {
-                ImageMetadata metadata = createImageMetadata(file, currentAccount.getId());
+                metadata = createImageMetadata(file, currentAccount.getId());
                 amazonS3.putObject(new PutObjectRequest(
                         bucketName, metadata.getName(), file.getInputStream(), new ObjectMetadata()
                 ));
@@ -56,9 +61,10 @@ public class UploadService {
                 log.error(e.getMessage());
                 throw new IOException("Error uploading file %s".formatted(file.getOriginalFilename()));
             }
+            fileDataMap.put(metadata.getName(), file.getSize());
         }
 
-        MessageToSend messageToSend = messageFactory.uploadMessage(currentAccount, files);
+        MessageToSend messageToSend = messageFactory.uploadMessage(currentAccount, fileDataMap);
         kafkaProducer.publicMessage(messageToSend);
     }
 

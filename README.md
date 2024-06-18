@@ -1,7 +1,7 @@
 Endpoints:
 
 all:
-post localhost:7070/register
+post localhost:7070/api/register
 {
     "username": "username",
     "password": "password",
