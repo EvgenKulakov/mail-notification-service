@@ -1,12 +1,13 @@
-package ru.abolsoft.core.service;
+package ru.abolsoft.core.service.cloud;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.S3Object;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class DownloadService {
 
@@ -17,10 +18,10 @@ public class DownloadService {
     private String bucketName;
 
 
-    public InputStreamResource downloadImage(String imageName) {
+    public S3Object downloadImage(String imageName) {
 
         S3Object s3object = amazonS3.getObject(bucketName, imageName);
 
-        return new InputStreamResource(s3object.getObjectContent());
+        return s3object;
     }
 }

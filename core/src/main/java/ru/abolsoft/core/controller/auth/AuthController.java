@@ -2,21 +2,28 @@ package ru.abolsoft.core.controller.auth;
 
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
-import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import ru.abolsoft.common.kafka.dto.MessageToSend;
 import ru.abolsoft.core.dto.AccountRegisterDTO;
 import ru.abolsoft.core.entity.Account;
-import ru.abolsoft.core.service.AccountService;
+import ru.abolsoft.core.service.kafka.KafkaProducer;
+import ru.abolsoft.core.service.kafka.MessageFactory;
+import ru.abolsoft.core.service.persist.AccountService;
 
 @RestController
 public class AuthController {
 
     @Autowired
     AccountService accountService;
+    @Autowired
+    private MessageFactory messageFactory;
+    @Autowired
+    private KafkaProducer kafkaProducer;
 
 
     @PostMapping("/register")
@@ -24,12 +31,12 @@ public class AuthController {
                                            BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.SC_BAD_REQUEST).body(
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     """
                     Validation error, use JSON:
                     {
                          "username": "username",
-                         "password": "username",
+                         "password": "password",
                          "role": "ROLE_MODERATOR",
                          "email": "email@email.com"
                     }
@@ -41,10 +48,14 @@ public class AuthController {
             account = createAccount(accountRegisterDTO);
             accountService.saveNewAccount(account);
         } catch (ValidationException e) {
-            return ResponseEntity.status(HttpStatus.SC_BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
 
-        return ResponseEntity.ok("Account %s successful save".formatted(account.getName()));
+        MessageToSend messageToSend = messageFactory.welcomeMessage(account);
+        kafkaProducer.publicMessage(messageToSend);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body("Account %s successful save".formatted(account.getName()));
     }
 
     private Account createAccount(AccountRegisterDTO accountRegisterDTO) {

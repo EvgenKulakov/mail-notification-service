@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.abolsoft.core.entity.Account;
 import ru.abolsoft.core.entity.ImageMetadata;
-import ru.abolsoft.core.service.AccountService;
-import ru.abolsoft.core.service.ImageMetadataService;
+import ru.abolsoft.core.service.persist.AccountService;
+import ru.abolsoft.core.service.persist.ImageMetadataService;
 
 import java.security.Principal;
 import java.time.LocalDate;

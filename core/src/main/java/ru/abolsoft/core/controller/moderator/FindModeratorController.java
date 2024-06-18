@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.abolsoft.core.entity.ImageMetadata;
-import ru.abolsoft.core.service.ImageMetadataService;
+import ru.abolsoft.core.service.persist.ImageMetadataService;
 
 import java.time.LocalDate;
 import java.util.List;

@@ -1,4 +1,4 @@
-package ru.abolsoft.core.service;
+package ru.abolsoft.core.service.persist;
 
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;

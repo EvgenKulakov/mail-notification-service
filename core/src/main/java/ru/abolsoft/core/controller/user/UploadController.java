@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import ru.abolsoft.core.entity.Account;
-import ru.abolsoft.core.service.AccountService;
-import ru.abolsoft.core.service.UploadService;
+import ru.abolsoft.core.service.persist.AccountService;
+import ru.abolsoft.core.service.cloud.UploadService;
 
 import java.io.IOException;
 import java.security.Principal;
@@ -25,6 +25,7 @@ public class UploadController {
     @Autowired
     private AccountService accountService;
 
+
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFiles(@RequestParam("files") MultipartFile[] files,
                                               Principal principal) {
@@ -32,14 +33,14 @@ public class UploadController {
         Account currentAccount = accountService.getAccountByLogin(principal.getName());
 
         try {
-            uploadService.uploadFiles(files, currentAccount.getId());
+            uploadService.uploadFiles(files, currentAccount);
         } catch (ValidationException VE) {
             return ResponseEntity.badRequest().body(VE.getMessage());
         } catch (IOException IOE) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(IOE.getMessage());
         }
 
-        //TODO: send to kafka
+
         return ResponseEntity.ok("Files uploaded successfully");
     }
 }

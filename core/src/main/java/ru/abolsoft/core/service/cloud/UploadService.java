@@ -1,4 +1,4 @@
-package ru.abolsoft.core.service;
+package ru.abolsoft.core.service.cloud;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -10,7 +10,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import ru.abolsoft.common.kafka.dto.MessageToSend;
+import ru.abolsoft.core.entity.Account;
 import ru.abolsoft.core.entity.ImageMetadata;
+import ru.abolsoft.core.service.kafka.KafkaProducer;
+import ru.abolsoft.core.service.kafka.MessageFactory;
+import ru.abolsoft.core.service.persist.ImageMetadataService;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -22,8 +27,11 @@ import java.util.UUID;
 public class UploadService {
 
     @Autowired
-    ImageMetadataService imageMetadataService;
-
+    private ImageMetadataService imageMetadataService;
+    @Autowired
+    private MessageFactory messageFactory;
+    @Autowired
+    private KafkaProducer kafkaProducer;
     @Autowired
     private AmazonS3 amazonS3;
 
@@ -32,14 +40,14 @@ public class UploadService {
 
 
     @Transactional
-    public void uploadFiles(MultipartFile[] files, Long currentAccountId) throws IOException {
+    public void uploadFiles(MultipartFile[] files, Account currentAccount) throws IOException {
 
         validationFiles(files);
 
         for (MultipartFile file : files) {
 
             try {
-                ImageMetadata metadata = createImageMetadata(file, currentAccountId);
+                ImageMetadata metadata = createImageMetadata(file, currentAccount.getId());
                 amazonS3.putObject(new PutObjectRequest(
                         bucketName, metadata.getName(), file.getInputStream(), new ObjectMetadata()
                 ));
@@ -49,6 +57,9 @@ public class UploadService {
                 throw new IOException("Error uploading file %s".formatted(file.getOriginalFilename()));
             }
         }
+
+        MessageToSend messageToSend = messageFactory.uploadMessage(currentAccount, files);
+        kafkaProducer.publicMessage(messageToSend);
     }
 
     private void validationFiles(MultipartFile[] files) {

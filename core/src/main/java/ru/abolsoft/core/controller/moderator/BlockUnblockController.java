@@ -4,7 +4,7 @@ import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.abolsoft.core.service.AccountService;
+import ru.abolsoft.core.service.persist.AccountService;
 
 @RestController
 @RequestMapping("/api/moderator")

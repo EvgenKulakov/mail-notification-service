@@ -1,4 +1,4 @@
-package ru.abolsoft.core.service;
+package ru.abolsoft.core.service.persist;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -45,7 +45,7 @@ public class ImageMetadataService {
     public boolean existImageByAccount(String imageName, Long currentAccountId) {
         Optional<ImageMetadata> optionalImageMetadata = imageMetadataRepository.findByName(imageName);
         if (optionalImageMetadata.isEmpty()) return false;
-        if (optionalImageMetadata.get().getAccountId().equals(currentAccountId)) return false;
+        if (!optionalImageMetadata.get().getAccountId().equals(currentAccountId)) return false;
         return true;
     }
 
